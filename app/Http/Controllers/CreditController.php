@@ -51,6 +51,8 @@ class CreditController extends Controller
 
     public function graph_client(GraphClientRequest $request)
     {
+
+        //doston
       return $this->credit->graph_client($request);
     }
     public function paid(PaidRequest $request)
