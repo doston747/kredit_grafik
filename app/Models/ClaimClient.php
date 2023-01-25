@@ -11,6 +11,12 @@ class ClaimClient extends Model
 
     protected $fillable=[
       'client_id','credit_product_id',
-      'summa','period',
+      'summa','period','type'
     ];
+    public function client()
+    {
+        return $this->hasOne(Client::class);
+    }
+
+
 }

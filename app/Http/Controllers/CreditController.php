@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ClaimClientRequest;
 use App\Http\Requests\GraphClientRequest;
 use App\Http\Requests\PaidRequest;
+use App\Http\Requests\TypeRequest;
+use App\Http\Requests\ReportRequest;
 use App\Services\CreditProductServise;
 use Illuminate\Http\Request;
 use App\Http\Requests\CreditProductRequest;
@@ -55,5 +57,17 @@ class CreditController extends Controller
     {
         return $this->credit->paid($request);
     }
+    public  function type(TypeRequest $request)
+    {
+     return $this->credit->type($request);
+    }
+
+    public function report(ReportRequest $request)
+    {
+        return $this->credit->report($request);
+    }
+
+
+
 
 }

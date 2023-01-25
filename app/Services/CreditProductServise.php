@@ -52,9 +52,13 @@ class CreditProductServise
 
     public function claim_credit($request)
     {
+       // $type = ClaimClient::where('type', '=', '0')->get();
+
         $credit = CreditProduct::find($request->credit_product_id);
         $pul = $credit->max_summa;
         $period = $credit->max_period;
+
+
         if ($pul < $request->summa) {
             return response()->json(["pul mablag'i mavjud emas"]);
         }
@@ -63,11 +67,14 @@ class CreditProductServise
             return response()->json(['kechirasiz bizda buncha oyga kredit berilmaydi']);
         }
 
+
         ClaimClient::create([
             'client_id' => $request->client_id,
             'credit_product_id' => $request->credit_product_id,
             'summa' => $request->summa,
             'period' => $request->period,
+            'type'=>0,
+
         ]);
 
         return response()->json(['bunaqasi bolmagan!! Tassano']);
@@ -78,19 +85,21 @@ class CreditProductServise
         return response()->json(ClaimClient::all());
     }
 
-    public function graph_client($request)
+    public function graph_client($client_id,$claim_client_id,$credit_product_id)
     {
-        $claim = ClaimClient::find($request->claim_client_id);
+        $claim = ClaimClient::find($claim_client_id);
         $order = $claim->period;
+
         $total_loan = $claim->summa;
-        $percent = CreditProduct::find($request->credit_product_id)->percent;
+        $percent = CreditProduct::find($credit_product_id)->percent;
+
 
         for ($i = 0; $i < $order; $i++) {
 
             $data = new GraphClient;
-            $data->client_id = $request->client_id;
-            $data->credit_product_id = $request->credit_product_id;
-            $data->claim_client_id = $request->claim_client_id;
+            $data->client_id = $client_id;
+            $data->credit_product_id = $credit_product_id;
+            $data->claim_client_id = $claim_client_id;
             $data->ordering = $i + 1;
             $data->paid = 0;
             $data->loan = $claim->summa / $order;
@@ -117,6 +126,7 @@ class CreditProductServise
     {
         $graphs = GraphClient::where('claim_client_id', $request->claim_client_id)
             ->where('loan', '>', '0')->get();
+
         $summa = $request->summa;
         foreach ($graphs as $graph) {
 
@@ -141,25 +151,38 @@ class CreditProductServise
         return response()->json(['ok']);
     }
 
+    public function type($request)
+    {
+     $birarsa=ClaimClient::where('id',$request->claim_client_id)->where('type','0')->first();
+     if ($birarsa==null){
+         return response()->json(['bu shaxsga kredit ajratilgan']);
+     }
+
+     $client_id=$birarsa->client_id;
+     $credit_product_id=$birarsa->credit_product_id;
+     $claim_client_id=$birarsa->credit_client_id;
+
+     $birarsa->type=$request->type;
+     $birarsa->update();
+
+     if ($request->type==1)
+     {
+         $this->graph_client( $client_id,$request->claim_client_id,$credit_product_id);
+
+     }
+     return response()->json(['bla']);
+    }
+
+    public function report($request)
+    {
+        $work = ClaimClient::where('type', $request->type)->with('client')->get();
+
+        return response()->json(['xop']);
+
+
+
+    }
+
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -26,3 +26,5 @@ Route::post('claim_client',[CreditController::class,'claim_client']);
 Route::get('claim_client',[CreditController::class,'get_claim_client']);
 Route::post('graph_client',[CreditController::class,'graph_client']);
 Route::post('paid',[CreditController::class,'paid']);
+Route::post('type',[CreditController::class,'type']);
+Route::post('report',[CreditController::class,'report']);
